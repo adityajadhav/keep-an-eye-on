@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Button,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -68,6 +69,13 @@ export default class HomeScreen extends React.Component {
             onPress={this._onSave}>
             <Text style={styles.buttonText}>save!</Text>
           </TouchableOpacity>
+          <TouchableOpacity>
+          <Button
+          onPress = {this._handleImagePicked}
+          title = "Upload!!"
+
+          />
+          </TouchableOpacity>
           </View>
 
           <View style={styles.helpContainer}>
@@ -76,7 +84,7 @@ export default class HomeScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-        
+
       </View>
     );
   }
@@ -95,6 +103,32 @@ export default class HomeScreen extends React.Component {
     const uri = await Expo.takeSnapshotAsync(this.memeView, {});
     await CameraRoll.saveToCameraRoll(uri);
   }
+
+  _handleImagePicked = async () => {
+    console.log("Button Pressed");
+    let uploadResponse, uploadResult;
+
+   try {
+     this.setState({ uploading: true });
+
+
+       uploadResponse = await uploadImageAsync(this.state.imgUri);
+       uploadResult = await uploadResponse.json();
+       this.setState({ image: uploadResult.location });
+       console.log("uploaded");
+
+   } catch (e) {
+     console.log({ uploadResponse });
+     console.log({ uploadResult });
+     console.log({ e });
+     alert('Upload failed, sorry :(');
+   } finally {
+     this.setState({ uploading: false });
+   }
+ };
+
+
+
 
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
@@ -128,6 +162,39 @@ export default class HomeScreen extends React.Component {
       'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
     );
   };
+}
+async function uploadImageAsync(imgUri) {
+  let apiUrl = 'http://104.194.98.94:8080/images/upload';
+
+      // Note:
+      // Uncomment this if you want to experiment with local server
+      //
+      // if (Constants.isDevice) {
+      //   apiUrl = `https://your-ngrok-subdomain.ngrok.io/upload`;
+      // } else {
+      //   apiUrl = `http://localhost:3000/upload`
+      // }
+      console.log("Image" + imgUri);
+    //  let uriParts = uri.split('.');
+    //  let fileType = uri[uri.length - 1];
+
+      let formData = new FormData();
+      formData.append('file', {
+        imgUri,
+        name: `file.jpg`,
+        type: `image/jpg`,
+      });
+
+      let options = {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+      return fetch(apiUrl, options);
+
 }
 
 const styles = StyleSheet.create({
