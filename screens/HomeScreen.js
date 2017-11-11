@@ -17,6 +17,12 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
+  state = {
+    imgUri: 'https://imgflip.com/s/meme/Philosoraptor.jpg',
+    topText: '',
+    bottomText: '',
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -32,10 +38,17 @@ export default class HomeScreen extends React.Component {
             />
           </View>
 
+          <View ref={(ref) => this.memeView = ref}>
+          <Image
+            style={{ width: 300, height: 300 }}
+            source={{ uri: this.state.imgUri }}
+          />
+        </View>
+
           <View style={styles.getStartedContainer}>
             {this._maybeRenderDevelopmentModeWarning()}
 
-            <Text style={styles.getStartedText}>Get started by opening</Text>
+            <Text style={styles.getStartedText}>Testing</Text>
 
             <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
               <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
@@ -44,6 +57,17 @@ export default class HomeScreen extends React.Component {
             <Text style={styles.getStartedText}>
               Change this text and your app will automatically reload.
             </Text>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={this._onTakePic}>
+            <Text style={styles.buttonText}>take a pic!</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={this._onSave}>
+            <Text style={styles.buttonText}>save!</Text>
+          </TouchableOpacity>
           </View>
 
           <View style={styles.helpContainer}>
@@ -52,16 +76,24 @@ export default class HomeScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
-        </View>
+        
       </View>
     );
+  }
+
+  _onTakePic = async () => {
+    const {
+      cancelled,
+      uri,
+    } = await Expo.ImagePicker.launchCameraAsync({});
+    if (!cancelled) {
+      this.setState({ imgUri: uri });
+    }
+  }
+
+  _onSave = async () => {
+    const uri = await Expo.takeSnapshotAsync(this.memeView, {});
+    await CameraRoll.saveToCameraRoll(uri);
   }
 
   _maybeRenderDevelopmentModeWarning() {
