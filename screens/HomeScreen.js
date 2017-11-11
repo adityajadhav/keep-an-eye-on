@@ -49,15 +49,13 @@ export default class HomeScreen extends React.Component {
           <View style={styles.getStartedContainer}>
             {this._maybeRenderDevelopmentModeWarning()}
 
-            <Text style={styles.getStartedText}>Testing</Text>
+
 
             <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
               <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
             </View>
 
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
+            
 
           <TouchableOpacity
             style={styles.button}
@@ -106,6 +104,7 @@ export default class HomeScreen extends React.Component {
 
   _handleImagePicked = async () => {
     console.log("Button Pressed");
+    console.log("Image" + this.state.imgUri);
     let uploadResponse, uploadResult;
 
    try {
@@ -113,9 +112,9 @@ export default class HomeScreen extends React.Component {
 
 
        uploadResponse = await uploadImageAsync(this.state.imgUri);
-       uploadResult = await uploadResponse.json();
-       this.setState({ image: uploadResult.location });
-       console.log("uploaded");
+       //uploadResult = await uploadResponse.json();
+       //this.setState({ image: uploadResult.location });
+
 
    } catch (e) {
      console.log({ uploadResponse });
@@ -164,6 +163,7 @@ export default class HomeScreen extends React.Component {
   };
 }
 async function uploadImageAsync(imgUri) {
+
   let apiUrl = 'http://104.194.98.94:8080/images/upload';
 
       // Note:
@@ -174,15 +174,15 @@ async function uploadImageAsync(imgUri) {
       // } else {
       //   apiUrl = `http://localhost:3000/upload`
       // }
-      console.log("Image" + imgUri);
+
     //  let uriParts = uri.split('.');
     //  let fileType = uri[uri.length - 1];
 
       let formData = new FormData();
       formData.append('file', {
-        imgUri,
+        uri:imgUri,
         name: `file.jpg`,
-        type: `image/jpg`,
+        type: `file/jpg`,
       });
 
       let options = {
