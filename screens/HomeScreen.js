@@ -94,7 +94,7 @@ export default class HomeScreen extends React.Component {
 
        uploadResponse = await uploadImageAsync(this.state.imgUri);
        uploadResult = await uploadResponse.json();
-       alert(uploadResult.msg);
+       
 
         this.props.navigation.navigate('Links');
 
