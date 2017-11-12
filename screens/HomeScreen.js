@@ -10,8 +10,11 @@ import {
   View,
 } from 'react-native';
 import { WebBrowser } from 'expo';
-
+import {TabNavigator} from '../navigation/MainTabNavigator';
 import { MonoText } from '../components/StyledText';
+import {
+  StackNavigator,
+} from 'react-navigation';
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -29,58 +32,36 @@ export default class HomeScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
+          <Text style={styles.titleText}>Keep An Eye On </Text>
           </View>
 
           <View ref={(ref) => this.memeView = ref}>
           <Image
-            style={{ width: 300, height: 300 }}
+            style={{ alignSelf: "stretch" , height: 300 }}
             source={{ uri: this.state.imgUri }}
           />
         </View>
 
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            
-
-          <TouchableOpacity
-            style={styles.button}
+          <View style={styles.buttonRow}>
+        <TouchableOpacity>
+            <Button title = "Take a pic"
             onPress={this._onTakePic}>
-            <Text style={styles.buttonText}>take a pic!</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={this._onSave}>
-            <Text style={styles.buttonText}>save!</Text>
+            </Button>
           </TouchableOpacity>
           <TouchableOpacity>
-          <Button
-          onPress = {this._handleImagePicked}
-          title = "Upload!!"
-
-          />
+            <Button title = "Save to Gallery"
+            onPress={this._onSave}>
+            </Button>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Button
+            onPress = {this._handleImagePicked}
+            title = "Upload">
+            </Button>
           </TouchableOpacity>
           </View>
 
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          </View>
+
         </ScrollView>
 
       </View>
@@ -112,7 +93,12 @@ export default class HomeScreen extends React.Component {
 
 
        uploadResponse = await uploadImageAsync(this.state.imgUri);
-       //uploadResult = await uploadResponse.json();
+       uploadResult = await uploadResponse.json();
+       alert(uploadResult.msg);
+
+        this.props.navigation.navigate('Links');
+
+
        //this.setState({ image: uploadResult.location });
 
 
@@ -201,6 +187,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  titleText:{
+    fontSize: 30,
+  },
+  buttonRow:{
+
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 5,
   },
   developmentModeText: {
     marginBottom: 20,
