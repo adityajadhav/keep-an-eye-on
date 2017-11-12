@@ -14,7 +14,7 @@ export default TabNavigator(
     Home: {
       screen: HomeScreen,
     },
-    Links: {
+    Analysis: {
       screen: LinksScreen,
     },
     Settings: {
@@ -33,7 +33,7 @@ export default TabNavigator(
                 ? `ios-information-circle${focused ? '' : '-outline'}`
                 : 'md-information-circle';
             break;
-          case 'Links':
+          case 'Analysis':
             iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link';
             break;
           case 'Settings':
