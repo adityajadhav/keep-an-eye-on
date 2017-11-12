@@ -17,6 +17,7 @@ export default TabNavigator(
     Analysis: {
       screen: LinksScreen,
     },
+   
     Settings: {
       screen: SettingsScreen,
     },

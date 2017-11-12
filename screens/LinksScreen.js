@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet,View, Button, Text, ListView } from 'react-native';
+import { ScrollView, StyleSheet,View, Button, Text, ListView, Image } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { Constants } from 'expo';
 
@@ -21,6 +21,9 @@ export default class LinksScreen extends React.Component {
       ],
       dataSource: 'null',
       status: -1,
+      score: 63.2,
+      imgUri: 'https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2017/08/1501862810blinking-eye-quake.gif',
+      dummy: 0,
     }
  
 
@@ -32,11 +35,21 @@ export default class LinksScreen extends React.Component {
     this.state.dataSource = ds.cloneWithRowsAndSections({TEST: this.state.data});
     return (
       <ScrollView style={styles.container}>
+        
         <View>
           <Button onPress={this._getUserInformation}
           title = "Analyze"
           />
           </View>
+          <View>{this._displayProgressBar(
+          
+            <Image
+            style={{ alignSelf: "stretch" , height: 350, marginLeft: 10, marginRight: 10 }}
+            source={{ uri: this.state.imgUri }}
+          />
+
+          )}
+        </View>
           {/*<Text >"Name: "{this.state.name}
           </Text>
           <Text >"Your Location: "{this.state.latitude} + "" + {this.state.longitude}
@@ -49,7 +62,7 @@ export default class LinksScreen extends React.Component {
           <View>{this._displayContent( 
             
                   <View style={styles.statusYes}>
-                  <Text style={styles.statusYesFont}  >There is 90% chance that you are affected by the <Text style={styles.diseaseName}>Retinoblastoma</Text></Text>
+                  <Text style={styles.statusYesFont}  >There is <Text>{this.state.score}</Text>% chance that you are affected by the <Text style={styles.diseaseName}>Retinoblastoma</Text></Text>
                   </View>
             
             )}</View>
@@ -57,7 +70,7 @@ export default class LinksScreen extends React.Component {
             <View>{this._displayContentNo( 
             
                   <View style={styles.statusNo}>
-                  <Text style={styles.statusNoFont}>You are eyes are perfect :)</Text>
+                  <Text style={styles.statusNoFont}>Your eyes are perfect :)</Text>
                   </View>
             
             )}</View>
@@ -82,31 +95,33 @@ export default class LinksScreen extends React.Component {
 
         <View style={styles.hospitalList}
         >
-        <ListView 
-        dataSource={this.state.dataSource}
-        enableEmptySections={true}
-        renderSectionHeader={() => {
-          return (
-            null
-          );
-        }}
-        renderRow={row => {
-          return <View style={{height: 40, alignSelf: 'stretch', backgroundColor: 'white'}}><Text style={styles.hospitalListFont}>{row.name}</Text></View>;
-        }}
-        renderHeader={() => {
-          return (
+        {this._displayContent(
+            <ListView 
+            dataSource={this.state.dataSource}
+            enableEmptySections={true}
+            renderSectionHeader={() => {
+              return (
+                null
+              );
+            }}
+            renderRow={row => {
+              return <View style={{height: 40, alignSelf: 'stretch', backgroundColor: 'white'}}><Text style={styles.hospitalsFont}>{row.name}</Text></View>;
+            }}
+            renderHeader={() => {
+              return (
+                
+                <View>
+                  {this._displayContent(
+                <View style={{height: 50, alignSelf: 'stretch', backgroundColor: '#4488FF'}}>
+                  <Text style={styles.hospitalListFont}>Nearest Hospitals</Text>
+                </View>
+                  )}
+                </View>
+              );
+            }}
             
-            <View>
-              {this._displayContent(
-            <View style={{height: 50, alignSelf: 'stretch', backgroundColor: 'yellow'}}>
-              <Text style={styles.hospitalListFont}>Nearest Hospitals</Text>
-            </View>
-              )}
-            </View>
-          );
-        }}
-        
-      />
+          />
+        )}
       </View>
 
 
@@ -128,6 +143,15 @@ export default class LinksScreen extends React.Component {
 
   }
 
+  _displayProgressBar = (content) => {
+    if(this.state.status == 100)
+    return content;
+
+    else
+
+    return null;
+  }
+
   _displayContentNo = (content) => {
     
 
@@ -144,26 +168,36 @@ export default class LinksScreen extends React.Component {
 
   _getUserInformation = async() => {
 
-      let uploadResponse, uploadResult, hospitalResponse, hospitalResult, hospital, i;
+      this.setState({status: 100});
+      let uploadResponse, uploadResult, hospitalResponse, hospitalResult, hospital, i, diseaseResult, diseaseResponse;
     try {
      
 
-      //If found infected
-      this.setState({status: 1});
-
-      //Else
-      this.setState({status: 0});
-
-      uploadResponse = await getInformation();
-      uploadResult = await uploadResponse.json();
       
 
-      this.setState({name:uploadResult.name});
-      this.setState({latitude:uploadResult.latitude});
-      this.setState({longitude:uploadResult.longitude});  
-
-
+      // uploadResponse = await getInformation();
+      // uploadResult = await uploadResponse.json();
       
+
+      // this.setState({name:uploadResult.name});
+      // this.setState({latitude:uploadResult.latitude});
+      // this.setState({longitude:uploadResult.longitude});  
+
+      //----------------------------------------------------------Uncomment------------------------------------------------
+      diseaseResponse = await getDiseaseStatus();
+      diseaseResult = await diseaseResponse.json();
+
+      if(diseaseResult.infected == true)
+      {
+        this.setState({status:1});
+        this.setState({score:diseaseResult.score});
+      }
+      else
+      {
+        this.setState({status:0});
+      }
+      //----------------------------------------------------------------------------------------------------------
+
 
       hospitalResponse = await getNearbyHospitals();
       hospitalResult = await hospitalResponse.json();
@@ -174,7 +208,10 @@ export default class LinksScreen extends React.Component {
       {
         this.state.data.push({'name' : hospitalResult[i].name});
         this.state.dataSource.cloneWithRowsAndSections({TEST: this.state.data})
+        this.setState({dummy:1});
+        
       }
+      this.state.dataSource.cloneWithRowsAndSections({TEST: this.state.data})
 
       console.log(this.state.data);
       
@@ -249,6 +286,33 @@ async function getNearbyHospitals() {
       };
       return fetch(apiUrl, options);
 }
+async function getDiseaseStatus() {
+
+  let apiUrl = 'http://104.194.98.94:8080/eye';
+
+      // Note:
+      // Uncomment this if you want to experiment with local server
+      //
+      // if (Constants.isDevice) {
+      //   apiUrl = `https://your-ngrok-subdomain.ngrok.io/upload`;
+      // } else {
+      //   apiUrl = `http://localhost:3000/upload`
+      // }
+
+    //  let uriParts = uri.split('.');
+    //  let fileType = uri[uri.length - 1];
+
+
+      let options = {
+        method: 'GET',
+        
+        headers: {
+          Accept: 'application/json',
+          
+        },
+      };
+      return fetch(apiUrl, options);
+}
 
 
 
@@ -259,7 +323,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   statusYes:{    
-    backgroundColor: '#f44242',
+    backgroundColor: '#E74C3C',
      elevation: 5,
      marginLeft: 5,
      marginRight: 5,
@@ -294,7 +358,7 @@ const styles = StyleSheet.create({
     color: 'white' 
   },
   description:{    
-    backgroundColor: '#417df4',
+    backgroundColor: 'white',
     marginLeft: 5,
      marginRight: 5,
      elevation: 5,
@@ -305,7 +369,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginLeft: 5,
      marginRight: 5,
-     color: 'white'
+     color: 'black'
   },
   
   hospitalList:{
@@ -322,7 +386,13 @@ const styles = StyleSheet.create({
  fontSize: 22,
     marginLeft: 5,
      marginRight: 5,
+     color:'white',
   },
-
+hospitalsFont:{
+ fontSize: 22,
+    marginLeft: 5,
+     marginRight: 5,
+     color:'black',
+  },
 
 });

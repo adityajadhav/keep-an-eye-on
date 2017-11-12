@@ -93,8 +93,8 @@ export default class HomeScreen extends React.Component {
      this.setState({ uploading: true });
 
 
-       //uploadResponse = await uploadImageAsync(this.state.imgUri);
-       //uploadResult = await uploadResponse.json();
+       uploadResponse = await uploadImageAsync(this.state.imgUri);
+       uploadResult = await uploadResponse.json();
        
 
         this.props.navigation.navigate('Analysis');
@@ -191,7 +191,9 @@ const styles = StyleSheet.create({
   },
   titleText:{
     fontSize: 30,
+    color: 'white',
   },
+  
   buttonRow:{
 
     flex: 1,
@@ -207,12 +209,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingTop: 30,
+    //paddingTop: 30,
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+   
+     backgroundColor: '#054593',
+     elevation: 5,
+     paddingTop: 10,
+     paddingBottom: 10,
+     marginBottom: 15,
+     
+    
   },
   welcomeImage: {
     width: 100,
