@@ -20,7 +20,7 @@ export default class LinksScreen extends React.Component {
         
       ],
       dataSource: 'null',
-      status: 0,
+      status: -1,
     }
  
 
@@ -54,6 +54,14 @@ export default class LinksScreen extends React.Component {
             
             )}</View>
 
+            <View>{this._displayContentNo( 
+            
+                  <View style={styles.statusNo}>
+                  <Text style={styles.statusNoFont}>You are eyes are perfect :)</Text>
+                  </View>
+            
+            )}</View>
+
           
            
 
@@ -72,13 +80,14 @@ export default class LinksScreen extends React.Component {
 
 
 
-        <View style={styles.hospitalList}>
+        <View style={styles.hospitalList}
+        >
         <ListView 
         dataSource={this.state.dataSource}
+        enableEmptySections={true}
         renderSectionHeader={() => {
           return (
-            <View>
-            </View>
+            null
           );
         }}
         renderRow={row => {
@@ -118,12 +127,32 @@ export default class LinksScreen extends React.Component {
     return null;
 
   }
+
+  _displayContentNo = (content) => {
+    
+
+    if(this.state.status == 0)
+
+    return content;
+
+    else 
+
+    return null;
+
+  }
+
+
   _getUserInformation = async() => {
 
       let uploadResponse, uploadResult, hospitalResponse, hospitalResult, hospital, i;
     try {
      
 
+      //If found infected
+      this.setState({status: 1});
+
+      //Else
+      this.setState({status: 0});
 
       uploadResponse = await getInformation();
       uploadResult = await uploadResponse.json();
@@ -134,8 +163,8 @@ export default class LinksScreen extends React.Component {
       this.setState({longitude:uploadResult.longitude});  
 
 
+      
 
-      this.state.status = 1;
       hospitalResponse = await getNearbyHospitals();
       hospitalResult = await hospitalResponse.json();
       console.log(hospitalResult);   
@@ -238,10 +267,27 @@ const styles = StyleSheet.create({
      marginBottom: 5,
      
   },
+  statusNo:{    
+    backgroundColor: '#69ce44',
+     elevation: 5,
+     marginLeft: 5,
+     marginRight: 5,
+     marginTop: 45,
+     marginBottom: 45,
+     
+     paddingBottom: 25,
+     paddingTop:25,
+  },
   diseaseName:{
     fontWeight: 'bold',
   },
   statusYesFont:{
+    fontSize: 32,
+    marginLeft: 5,
+    marginRight: 5,
+    color: 'white' 
+  },
+  statusNoFont:{
     fontSize: 32,
     marginLeft: 5,
     marginRight: 5,

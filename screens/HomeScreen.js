@@ -22,7 +22,8 @@ export default class HomeScreen extends React.Component {
   };
 
   state = {
-    imgUri: 'https://imgflip.com/s/meme/Philosoraptor.jpg',
+  //  imgUri: 'https://imgflip.com/s/meme/Philosoraptor.jpg',
+    imgUri: 'https://www.delhitrainingcourses.com/images/scanning.png',
     topText: '',
     bottomText: '',
   }
@@ -37,7 +38,7 @@ export default class HomeScreen extends React.Component {
 
           <View ref={(ref) => this.memeView = ref}>
           <Image
-            style={{ alignSelf: "stretch" , height: 300 }}
+            style={{ alignSelf: "stretch" , height: 350 }}
             source={{ uri: this.state.imgUri }}
           />
         </View>
@@ -92,8 +93,8 @@ export default class HomeScreen extends React.Component {
      this.setState({ uploading: true });
 
 
-       uploadResponse = await uploadImageAsync(this.state.imgUri);
-       uploadResult = await uploadResponse.json();
+       //uploadResponse = await uploadImageAsync(this.state.imgUri);
+       //uploadResult = await uploadResponse.json();
        
 
         this.props.navigation.navigate('Analysis');
