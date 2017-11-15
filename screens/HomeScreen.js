@@ -10,19 +10,19 @@ import {
   View,
 } from 'react-native';
 import { WebBrowser } from 'expo';
-import {TabNavigator} from '../navigation/MainTabNavigator';
+import { TabNavigator } from '../navigation/MainTabNavigator';
 import { MonoText } from '../components/StyledText';
 import {
   StackNavigator,
 } from 'react-navigation';
 
 export default class HomeScreen extends React.Component {
+
   static navigationOptions = {
     header: null,
   };
 
   state = {
-  //  imgUri: 'https://imgflip.com/s/meme/Philosoraptor.jpg',
     imgUri: 'https://www.delhitrainingcourses.com/images/scanning.png',
     topText: '',
     bottomText: '',
@@ -32,34 +32,35 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+          
           <View style={styles.welcomeContainer}>
-          <Text style={styles.titleText}>Keep An Eye On </Text>
+            <Text style={styles.titleText}>Keep An Eye On </Text>
           </View>
 
-          <View ref={(ref) => this.memeView = ref}>
-          <Image
-            style={{ alignSelf: "stretch" , height: 350 }}
-            source={{ uri: this.state.imgUri }}
-          />
-        </View>
+          <View ref={(ref) => this.memeView = ref} style={styles.imageView}>
+            <Image
+              style={{ alignSelf: "stretch", height: 350 }}
+              source={{ uri: this.state.imgUri }}
+            />
+          </View>
 
           <View style={styles.buttonRow}>
-        <TouchableOpacity>
-            <Button title = "Take a pic"
-            onPress={this._onTakePic}>
-            </Button>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Button title = "Save to Gallery"
-            onPress={this._onSave}>
-            </Button>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Button
-            onPress = {this._handleImagePicked}
-            title = "Upload">
-            </Button>
-          </TouchableOpacity>
+            <TouchableOpacity>
+              <Button title="Take a pic"
+                onPress={this._onTakePic}>
+              </Button>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Button title="Save to Gallery"
+                onPress={this._onSave}>
+              </Button>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Button
+                onPress={this._handleImagePicked}
+                title="Upload">
+              </Button>
+            </TouchableOpacity>
           </View>
 
 
@@ -89,31 +90,21 @@ export default class HomeScreen extends React.Component {
     console.log("Image" + this.state.imgUri);
     let uploadResponse, uploadResult;
 
-   try {
-     this.setState({ uploading: true });
+    try {
 
+      this.setState({ uploading: true });
 
-       uploadResponse = await uploadImageAsync(this.state.imgUri);
-       uploadResult = await uploadResponse.json();
-       
+      uploadResponse = await uploadImageAsync(this.state.imgUri);
+      uploadResult = await uploadResponse.json();
 
-        this.props.navigation.navigate('Analysis');
+      this.props.navigation.navigate('Analysis');
 
-
-       //this.setState({ image: uploadResult.location });
-
-
-   } catch (e) {
-     console.log({ uploadResponse });
-     console.log({ uploadResult });
-     console.log({ e });
-     alert('Upload failed, sorry :(');
-   } finally {
-     this.setState({ uploading: false });
-   }
- };
-
-
+    } catch (e) {
+      alert('Upload failed, sorry :(');
+    } finally {
+      this.setState({ uploading: false });
+    }
+  };
 
 
   _maybeRenderDevelopmentModeWarning() {
@@ -151,36 +142,24 @@ export default class HomeScreen extends React.Component {
 }
 async function uploadImageAsync(imgUri) {
 
-  let apiUrl = 'http://104.194.98.94:8080/images/upload';
+  let apiUrl = 'http://10.0.0.5:8080/images/upload';
 
-      // Note:
-      // Uncomment this if you want to experiment with local server
-      //
-      // if (Constants.isDevice) {
-      //   apiUrl = `https://your-ngrok-subdomain.ngrok.io/upload`;
-      // } else {
-      //   apiUrl = `http://localhost:3000/upload`
-      // }
+  let formData = new FormData();
+  formData.append('file', {
+    uri: imgUri,
+    name: `file.jpg`,
+    type: `file/jpg`,
+  });
 
-    //  let uriParts = uri.split('.');
-    //  let fileType = uri[uri.length - 1];
-
-      let formData = new FormData();
-      formData.append('file', {
-        uri:imgUri,
-        name: `file.jpg`,
-        type: `file/jpg`,
-      });
-
-      let options = {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-      };
-      return fetch(apiUrl, options);
+  let options = {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+  return fetch(apiUrl, options);
 
 }
 
@@ -189,17 +168,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  titleText:{
+  titleText: {
     fontSize: 30,
     color: 'white',
   },
-  
-  buttonRow:{
-
+  imageView: {
+    padding: 30
+  },
+  buttonRow: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 5,
+    padding: 15,
   },
   developmentModeText: {
     marginBottom: 20,
@@ -213,14 +193,14 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-   
-     backgroundColor: '#054593',
-     elevation: 5,
-     paddingTop: 10,
-     paddingBottom: 10,
-     marginBottom: 15,
-     
-    
+
+    backgroundColor: '#054593',
+    elevation: 5,
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginBottom: 15,
+
+
   },
   welcomeImage: {
     width: 100,
